@@ -141,6 +141,15 @@ fun handleCollisionWithWalls(
     return newVelocity
 }
 
+fun determineWinner(type1: GameObjectType, type2: GameObjectType): GameObjectType {
+    return when {
+        (type1 == GameObjectType.ROCK && type2 == GameObjectType.SCISSORS) ||
+                (type1 == GameObjectType.PAPER && type2 == GameObjectType.ROCK) ||
+                (type1 == GameObjectType.SCISSORS && type2 == GameObjectType.PAPER) -> type1
+        else -> type2
+    }
+}
+
 @Preview
 @Composable
 fun GamePreview() {
