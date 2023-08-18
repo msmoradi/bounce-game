@@ -34,8 +34,8 @@ fun Game() {
     var gameObjects by remember {
         mutableStateOf(
             generateInitialObjects(
-                heightInPx / 2,
-                widthInPx / 2
+                heightInPx,
+                widthInPx
             )
         )
     }
@@ -44,10 +44,16 @@ fun Game() {
         while (true) {
             gameObjects = gameObjects.map { gameObject ->
                 val newPosition = gameObject.position + gameObject.velocity
-                // TODO handle collision
+                val newVelocity = handleCollision(
+                    newPosition,
+                    gameObject.velocity,
+                    heightInPx,
+                    widthInPx
+                )
 
                 gameObject.copy(
                     position = newPosition,
+                    velocity = newVelocity
                 )
             }
 
@@ -81,19 +87,6 @@ fun generateInitialObjects(screenHeight: Int, screenWidth: Int): List<GameObject
             IntOffset(Random.nextInt(0, screenHeight), Random.nextInt(0, screenWidth)),
             IntOffset(Random.nextInt(-5, 5), Random.nextInt(-5, 5))
         )
-
-    } + List(5) {
-        GameObject(
-            type = GameObjectType.PAPER,
-            IntOffset(Random.nextInt(0, screenHeight), Random.nextInt(0, screenWidth)),
-            IntOffset(Random.nextInt(-5, 5), Random.nextInt(-5, 5))
-        )
-    } + List(5) {
-        GameObject(
-            type = GameObjectType.SCISSORS,
-            IntOffset(Random.nextInt(0, screenHeight), Random.nextInt(0, screenWidth)),
-            IntOffset(Random.nextInt(-5, 5), Random.nextInt(-5, 5))
-        )
     }
 }
 
@@ -103,6 +96,41 @@ fun getColorForType(type: GameObjectType): Color {
         GameObjectType.PAPER -> Color.Green
         GameObjectType.SCISSORS -> Color.Blue
     }
+}
+
+fun handleCollision(
+    position: IntOffset,
+    velocity: IntOffset,
+    screenHeight: Int,
+    screenWidth: Int
+): IntOffset {
+
+    // Handle collision with walls
+    return handleCollisionWithWalls(
+        position = position,
+        velocity = velocity,
+        screenHeight = screenHeight,
+        screenWidth = screenWidth
+    )
+
+    // TODO Handle collision with other game objects
+}
+
+fun handleCollisionWithWalls(
+    position: IntOffset,
+    velocity: IntOffset,
+    screenHeight: Int,
+    screenWidth: Int
+): IntOffset {
+    var newVelocity = velocity
+
+    if (position.x <= 0 || position.x >= screenWidth - objectSize * 3) {
+        newVelocity = IntOffset(-velocity.x, velocity.y)
+    }
+    if (position.y <= 0 || position.y >= screenHeight - objectSize * 6) {
+        newVelocity = IntOffset(velocity.x, -velocity.y)
+    }
+    return newVelocity
 }
 
 @Preview
