@@ -81,11 +81,19 @@ fun Game() {
 }
 
 fun generateInitialObjects(screenHeight: Int, screenWidth: Int): List<GameObject> {
-    return List(5) {
+    return (0 until 15).map {
+        val type = when (it) {
+            in 0 until 5 -> GameObjectType.ROCK
+            in 5 until 10 -> GameObjectType.PAPER
+            else -> GameObjectType.SCISSORS
+        }
         GameObject(
-            type = GameObjectType.ROCK,
-            IntOffset(Random.nextInt(0, screenHeight), Random.nextInt(0, screenWidth)),
-            IntOffset(Random.nextInt(-5, 5), Random.nextInt(-5, 5))
+            type = type,
+            position = IntOffset(
+                Random.nextInt(0, screenWidth - objectSize * 4),
+                Random.nextInt(0, screenHeight - objectSize * 4)
+            ),
+            velocity = IntOffset(Random.nextInt(-5, 5), Random.nextInt(-5, 5))
         )
     }
 }
